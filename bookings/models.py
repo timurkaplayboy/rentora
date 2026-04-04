@@ -37,6 +37,12 @@ class Booking(models.Model):
         return f'{self.full_name} - {self.room.name}'
 
     def clean(self):
+        if not self.room_id:
+            return
+
+        if not self.start_date or not self.end_date:
+            return
+
         if self.start_date >= self.end_date:
             raise ValidationError('Дата виїзду має бути пізніше за дату заїзду.')
 

@@ -1,46 +1,104 @@
 {% extends 'base.html' %}
 
+{% block body_class %}room-detail-page-bg{% endblock %}
+
 {% block title %}Rentora | {{ room.name }}{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="card room-detail-card">
-        <h1>{{ room.name }}</h1>
-        <p><strong>Номер:</strong> {{ room.number }}</p>
-        <p><strong>Тип:</strong> {{ room.room_type.name }}</p>
-        <p><strong>Опис:</strong> {{ room.description }}</p>
-        <p><strong>Місткість:</strong> {{ room.capacity }}</p>
-        <p><strong>Особливості:</strong> {{ room.features|default:"Не вказано" }}</p>
-        <p><strong>Ціна за ніч:</strong> ${{ room.price_per_night }}</p>
+<section class="inner-hero">
+    <div class="container">
+        <div class="inner-hero-content">
+            <p class="eyebrow">{{ room.room_type.name }}</p>
+            <h1>{{ room.name }}</h1>
+            <p>
+                Вишуканий простір Rentora, створений для гостей, які цінують комфорт,
+                приватність та luxury-атмосферу.
+            </p>
+        </div>
     </div>
+</section>
 
-    <div class="card booking-card">
-        <h2>Перевірка доступності</h2>
+<section class="room-detail-page-section">
+    <div class="container">
+        <div class="room-detail-grid">
+            <div class="room-detail-left">
+                <div class="room-detail-main-card">
+                    <div class="room-detail-header-row">
+                        <span class="room-badge">{{ room.room_type.name }}</span>
+                        <div class="room-detail-price">
+                            <span class="price">${{ room.price_per_night }}</span>
+                            <span class="per-night">/ ніч</span>
+                        </div>
+                    </div>
 
-        <div class="availability-check">
-            <input type="date" id="check-start-date">
-            <input type="date" id="check-end-date">
-            <button type="button" class="btn btn-small" onclick="checkAvailability()">Перевірити</button>
+                    <div class="room-detail-info">
+                        <div class="room-detail-info-row">
+                            <span>Номер</span>
+                            <strong>{{ room.number }}</strong>
+                        </div>
+
+                        <div class="room-detail-info-row">
+                            <span>Тип</span>
+                            <strong>{{ room.room_type.name }}</strong>
+                        </div>
+
+                        <div class="room-detail-info-row">
+                            <span>Місткість</span>
+                            <strong>До {{ room.capacity }} гостей</strong>
+                        </div>
+                    </div>
+
+                    <div class="room-detail-text-block">
+                        <h3>Опис</h3>
+                        <p>{{ room.description }}</p>
+                    </div>
+
+                    <div class="room-detail-text-block">
+                        <h3>Особливості</h3>
+                        <p>{{ room.features|default:"Не вказано" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-detail-right">
+                <div class="room-side-card">
+                    <h2>Перевірка доступності</h2>
+
+                    <div class="availability-check room-availability-form">
+                        <input type="date" id="check-start-date">
+                        <input type="date" id="check-end-date">
+                        <button type="button" class="btn btn-gold btn-full" onclick="checkAvailability()">
+                            Перевірити
+                        </button>
+                    </div>
+
+                    <p id="availability-result" class="availability-result-text">
+                        Вкажіть дату заїзду і виїзду.
+                    </p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="room-side-card">
+                        <h2>Забронювати кімнату</h2>
+
+                        <form method="post" action="{% url 'create_booking' room.id %}" class="auth-form">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-gold btn-full">Підтвердити бронювання</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="room-side-card">
+                        <h2>Бронювання</h2>
+                        <p class="room-login-note">
+                            Щоб забронювати кімнату, потрібно
+                            <a href="{% url 'login' %}">увійти</a>.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-
-        <p id="availability-result"></p>
     </div>
-
-    {% if user.is_authenticated %}
-        <div class="card booking-card">
-            <h2>Забронювати кімнату</h2>
-
-            <form method="post" action="{% url 'create_booking' room.id %}">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn">Підтвердити бронювання</button>
-            </form>
-        </div>
-    {% else %}
-        <div class="card">
-            <p>Щоб забронювати кімнату, потрібно <a href="{% url 'login' %}">увійти</a>.</p>
-        </div>
-    {% endif %}
 </section>
 
 <script>

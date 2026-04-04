@@ -1,23 +1,79 @@
 {% extends 'base.html' %}
 
+{% block body_class %}bookings-page-bg{% endblock %}
+
 {% block title %}Rentora | Мої бронювання{% endblock %}
 
 {% block content %}
-<section class="section">
-    <h1>Мої бронювання</h1>
+<section class="inner-hero">
+    <div class="container">
+        <div class="inner-hero-content">
+            <p class="eyebrow">Personal Dashboard</p>
+            <h1>Мої бронювання</h1>
+            <p>
+                Переглядайте свої активні та минулі бронювання, контролюйте статус
+                і зберігайте всі деталі в одному місці.
+            </p>
+        </div>
+    </div>
+</section>
 
-    <div class="cards">
-        {% for booking in bookings %}
-            <div class="card">
-                <h3>{{ booking.room.name }}</h3>
-                <p><strong>Період:</strong> {{ booking.start_date }} — {{ booking.end_date }}</p>
-                <p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
-                <p><strong>Email:</strong> {{ booking.email }}</p>
-                <p><strong>Створено:</strong> {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+<section class="bookings-page-section">
+    <div class="container">
+        {% if bookings %}
+            <div class="booking-grid">
+                {% for booking in bookings %}
+                    <div class="booking-item-card">
+                        <div class="booking-status-row">
+                            <span class="room-badge">{{ booking.room.room_type.name }}</span>
+
+                            {% if booking.status == 'confirmed' %}
+                                <span class="booking-status booking-status-confirmed">Підтверджено</span>
+                            {% elif booking.status == 'pending' %}
+                                <span class="booking-status booking-status-pending">Очікує</span>
+                            {% else %}
+                                <span class="booking-status booking-status-cancelled">Скасовано</span>
+                            {% endif %}
+                        </div>
+
+                        <h3>{{ booking.room.name }}</h3>
+                        <p class="booking-meta">Номер {{ booking.room.number }}</p>
+
+                        <div class="booking-info-list">
+                            <div class="booking-info-row">
+                                <span>Період</span>
+                                <strong>{{ booking.start_date }} — {{ booking.end_date }}</strong>
+                            </div>
+
+                            <div class="booking-info-row">
+                                <span>Email</span>
+                                <strong>{{ booking.email }}</strong>
+                            </div>
+
+                            <div class="booking-info-row">
+                                <span>Створено</span>
+                                <strong>{{ booking.created_at|date:"d.m.Y H:i" }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="booking-card-footer">
+                            <span class="price">${{ booking.room.price_per_night }}</span>
+                            <span class="per-night">/ ніч</span>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% empty %}
-            <p>У вас поки немає бронювань.</p>
-        {% endfor %}
+        {% else %}
+            <div class="empty-state-card">
+                <p class="eyebrow">No bookings yet</p>
+                <h2>У вас поки немає бронювань</h2>
+                <p>
+                    Оберіть кімнату з нашої колекції та створіть своє перше бронювання
+                    у Rentora.
+                </p>
+                <a href="{% url 'room_list' %}" class="btn btn-gold">Переглянути кімнати</a>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
