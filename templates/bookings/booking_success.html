@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Rentora | Успіх{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="card">
+        <h1>Бронювання створено</h1>
+        <p>Ваше бронювання успішно збережено.</p>
+        <a href="{% url 'my_bookings' %}" class="btn">Перейти до моїх бронювань</a>
+    </div>
+</section>
+{% endblock %}

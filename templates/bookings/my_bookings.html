@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Rentora | Мої бронювання{% endblock %}
+
+{% block content %}
+<section class="section">
+    <h1>Мої бронювання</h1>
+
+    <div class="cards">
+        {% for booking in bookings %}
+            <div class="card">
+                <h3>{{ booking.room.name }}</h3>
+                <p><strong>Період:</strong> {{ booking.start_date }} — {{ booking.end_date }}</p>
+                <p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
+                <p><strong>Email:</strong> {{ booking.email }}</p>
+                <p><strong>Створено:</strong> {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+        {% empty %}
+            <p>У вас поки немає бронювань.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

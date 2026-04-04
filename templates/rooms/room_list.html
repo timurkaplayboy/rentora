@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Rentora | Кімнати{% endblock %}
+
+{% block content %}
+<section class="section">
+    <h1>Доступні кімнати</h1>
+
+    <form method="get" class="filter-form">
+        <select name="type">
+            <option value="">Усі типи</option>
+            {% for type in room_types %}
+                <option value="{{ type.id }}">{{ type.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="number" name="guests" placeholder="К-сть гостей">
+
+        <button type="submit" class="btn btn-small">Фільтрувати</button>
+    </form>
+
+    <div class="cards">
+        {% for room in rooms %}
+            <div class="card">
+                <h3>{{ room.name }}</h3>
+                <p>Номер: {{ room.number }}</p>
+                <p>Тип: {{ room.room_type.name }}</p>
+                <p>Місткість: {{ room.capacity }}</p>
+                <p>Ціна за ніч: ${{ room.price_per_night }}</p>
+                <a href="{% url 'room_detail' room.pk %}" class="btn btn-small">Переглянути</a>
+            </div>
+        {% empty %}
+            <p>Кімнати не знайдені.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

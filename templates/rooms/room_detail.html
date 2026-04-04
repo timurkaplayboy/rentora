@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Rentora | {{ room.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="card room-detail-card">
+        <h1>{{ room.name }}</h1>
+        <p><strong>Номер:</strong> {{ room.number }}</p>
+        <p><strong>Тип:</strong> {{ room.room_type.name }}</p>
+        <p><strong>Опис:</strong> {{ room.description }}</p>
+        <p><strong>Місткість:</strong> {{ room.capacity }}</p>
+        <p><strong>Особливості:</strong> {{ room.features|default:"Не вказано" }}</p>
+        <p><strong>Ціна за ніч:</strong> ${{ room.price_per_night }}</p>
+    </div>
+
+    <div class="card booking-card">
+        <h2>Перевірка доступності</h2>
+
+        <div class="availability-check">
+            <input type="date" id="check-start-date">
+            <input type="date" id="check-end-date">
+            <button type="button" class="btn btn-small" onclick="checkAvailability()">Перевірити</button>
+        </div>
+
+        <p id="availability-result"></p>
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="card booking-card">
+            <h2>Забронювати кімнату</h2>
+
+            <form method="post" action="{% url 'create_booking' room.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn">Підтвердити бронювання</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>Щоб забронювати кімнату, потрібно <a href="{% url 'login' %}">увійти</a>.</p>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    function checkAvailability() {
+        const startDate = document.getElementById('check-start-date').value;
+        const endDate = document.getElementById('check-end-date').value;
+        const resultBlock = document.getElementById('availability-result');
+
+        fetch(`/bookings/room/{{ room.id }}/check/?start_date=${startDate}&end_date=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                resultBlock.textContent = data.message;
+            })
+            .catch(() => {
+                resultBlock.textContent = 'Помилка перевірки доступності.';
+            });
+    }
+</script>
+{% endblock %}
